@@ -14,7 +14,13 @@ class CreateTransactionService {
     this.transactionsRepository = transactionsRepository;
   }
 
-  public execute({ title, type, value }: Request): Transaction {
+  public execute({ title, type, value }: Request): Transaction | Error {
+    if (type === 'outcome') {
+      const { total } = this.transactionsRepository.getBalance();
+
+      if (total < value) throw new Error('Sem saldo');
+    }
+
     const transaction = this.transactionsRepository.create({
       title,
       type,
