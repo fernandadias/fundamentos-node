@@ -15,10 +15,13 @@ class CreateTransactionService {
   }
 
   public execute({ title, type, value }: Request): Transaction | Error {
+    if (!['income', 'outcome'].includes(type)) {
+      throw new Error('I do not understand this type, sorry');
+    }
     if (type === 'outcome') {
       const { total } = this.transactionsRepository.getBalance();
 
-      if (total < value) throw new Error('Sem saldo');
+      if (total < value) throw new Error('Without money, dude :(');
     }
 
     const transaction = this.transactionsRepository.create({
